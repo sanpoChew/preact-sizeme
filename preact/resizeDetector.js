@@ -19,7 +19,8 @@ function resizeDetector() {
 
   if (!instance) {
     instance = (0, _elementResizeDetector2.default)({
-      strategy: strategy
+      strategy: strategy,
+      important: true
     });
   }
 
