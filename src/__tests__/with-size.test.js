@@ -4,10 +4,10 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-extraneous-dependencies */
 
-import React from 'react'
+import { h } from 'preact'
 import enzyme, { mount } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { Adapter } from 'enzyme-adapter-preact'
+import renderToString from 'preact-render-to-string'
 
 enzyme.configure({ adapter: new Adapter() })
 
@@ -123,7 +123,7 @@ describe('withSize', () => {
     it('should pass the size data to the callback and pass down no size prop', () => {
       const SizeAwareComponent = withSize({ monitorHeight: true })(SizeRender)
 
-      class SizeCallbackWrapper extends React.Component {
+      class SizeCallbackWrapper extends Component {
         state = {
           size: null,
         }
@@ -426,9 +426,7 @@ describe('withSize', () => {
         monitorWidth: true,
       })(SizeRender)
 
-      const actual = renderToStaticMarkup(
-        <SizeAwareComponent otherProp="foo" />,
-      )
+      const actual = renderToString(<SizeAwareComponent otherProp="foo" />)
 
       expect(actual).toContain(expected({}))
     })

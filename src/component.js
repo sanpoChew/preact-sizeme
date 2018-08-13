@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { Component, h } from 'preact'
 import isShallowEqual from 'shallowequal'
 import PropTypes from 'prop-types'
 import withSize from './with-size'

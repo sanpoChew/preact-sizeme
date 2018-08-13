@@ -1,6 +1,6 @@
-import React from 'react'
+import { h, Component } from 'preact'
 import enzyme, { shallow } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
+import { Adapter } from 'enzyme-adapter-preact'
 import withSizeMock from '../with-size'
 import SizeMe from '../component'
 

@@ -1,9 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/require-default-props */
 
-import React, { Children, Component } from 'react'
+import { Component, h } from 'preact'
 import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 import invariant from 'invariant'
 import throttle from 'lodash.throttle'
 import debounce from 'lodash.debounce'
@@ -32,7 +31,7 @@ class ReferenceWrapper extends Component {
   static displayName = 'SizeMeReferenceWrapper'
 
   render() {
-    return Children.only(this.props.children)
+    return this.props.children[0]
   }
 }
 ReferenceWrapper.propTypes = { children: PropTypes.element.isRequired }
@@ -171,7 +170,7 @@ function withSize(config = defaultConfig) {
   return function WrapComponent(WrappedComponent) {
     const SizeMeRenderWrapper = renderWrapper(WrappedComponent)
 
-    class SizeAwareComponent extends React.Component {
+    class SizeAwareComponent extends Component {
       static displayName = `SizeMe(${getDisplayName(WrappedComponent)})`
 
       static propTypes = {
@@ -235,7 +234,7 @@ function withSize(config = defaultConfig) {
         this.strategy === 'callback' ? this.callbackState : this.state
 
       handleDOMNode(first) {
-        const found = this.element && ReactDOM.findDOMNode(this.element)
+        const found = this.base
 
         if (!found) {
           // If we previously had a dom node then we need to ensure that
