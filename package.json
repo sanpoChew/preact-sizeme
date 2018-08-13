@@ -90,7 +90,8 @@
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/(coverage|dist|node_modules|tools)/"
-    ]
+    ],
+    "testURL": "http://localhost/"
   },
   "eslintConfig": {
     "root": true,
