@@ -1,13 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/require-default-props */
 
-import React, { Children, Component } from 'react'
+import { Component, h } from 'preact'
 import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 import invariant from 'invariant'
-import throttle from 'lodash/throttle'
-import debounce from 'lodash/debounce'
-import resizeDetector from './resizeDetector'
+import throttle from 'lodash.throttle'
+import debounce from 'lodash.debounce'
+import resizeDetector from './resize-detector'
 
 const defaultConfig = {
   monitorWidth: true,
@@ -32,7 +31,7 @@ class ReferenceWrapper extends Component {
   static displayName = 'SizeMeReferenceWrapper'
 
   render() {
-    return Children.only(this.props.children)
+    return this.props.children[0]
   }
 }
 ReferenceWrapper.propTypes = { children: PropTypes.element.isRequired }
@@ -139,7 +138,7 @@ const renderWrapper = WrappedComponent => {
  *
  * @return The wrapped component.
  */
-function sizeMe(config = defaultConfig) {
+function withSize(config = defaultConfig) {
   const {
     monitorWidth = defaultConfig.monitorWidth,
     monitorHeight = defaultConfig.monitorHeight,
@@ -171,7 +170,7 @@ function sizeMe(config = defaultConfig) {
   return function WrapComponent(WrappedComponent) {
     const SizeMeRenderWrapper = renderWrapper(WrappedComponent)
 
-    class SizeAwareComponent extends React.Component {
+    class SizeAwareComponent extends Component {
       static displayName = `SizeMe(${getDisplayName(WrappedComponent)})`
 
       static propTypes = {
@@ -185,15 +184,17 @@ function sizeMe(config = defaultConfig) {
       }
 
       componentDidMount() {
+        this.detector = resizeDetector(resizeDetectorStrategy)
         this.determineStrategy(this.props)
-        this.handleDOMNode()
-      }
-
-      componentWillReceiveProps(nextProps) {
-        this.determineStrategy(nextProps)
+        this.handleDOMNode(true)
       }
 
       componentDidUpdate() {
+        /**
+         * Change component will mount to componentDidUpdate
+         * Based on https://github.com/reactjs/reactjs.org/issues/721
+         */
+        this.determineStrategy(this.props)
         this.handleDOMNode()
       }
 
@@ -204,7 +205,7 @@ function sizeMe(config = defaultConfig) {
         this.checkIfSizeChanged = () => undefined
 
         if (this.domEl) {
-          resizeDetector(resizeDetectorStrategy).removeAllListeners(this.domEl)
+          this.detector.uninstall(this.domEl)
           this.domEl = null
         }
       }
@@ -226,41 +227,32 @@ function sizeMe(config = defaultConfig) {
         if (this.strategy === 'callback') {
           this.callbackState = state
           this.props.onSize(state)
-        } else {
-          this.setState(state)
         }
+        this.setState(state)
       }
 
       strategisedGetState = () =>
         this.strategy === 'callback' ? this.callbackState : this.state
 
-      handleDOMNode() {
-        const found =
-          this.element &&
-          // One day this will be deprecated then I will be forced into wrapping
-          // the component with a div or such in order to get a dome element handle.
-          ReactDOM.findDOMNode(this.element) // eslint-disable-line react/no-find-dom-node
+      handleDOMNode(first) {
+        const found = this.base
 
         if (!found) {
-          // This is for special cases where the element may be null.
-          if (this.domEl) {
-            resizeDetector(resizeDetectorStrategy).removeAllListeners(
-              this.domEl,
-            )
+          // If we previously had a dom node then we need to ensure that
+          // we remove any existing listeners to avoid memory leaks.
+          if (!first && this.domEl) {
+            this.detector.removeAllListeners(this.domEl)
             this.domEl = null
           }
           return
         }
 
-        if (this.domEl) {
-          resizeDetector(resizeDetectorStrategy).removeAllListeners(this.domEl)
+        if (!first && this.domEl) {
+          this.detector.removeAllListeners(this.domEl)
         }
 
         this.domEl = found
-        resizeDetector(resizeDetectorStrategy).listenTo(
-          this.domEl,
-          this.checkIfSizeChanged,
-        )
+        this.detector.listenTo(this.domEl, this.checkIfSizeChanged)
       }
 
       refCallback = element => {
@@ -307,8 +299,8 @@ function sizeMe(config = defaultConfig) {
 
       render() {
         const disablePlaceholder =
-          sizeMe.enableSSRBehaviour ||
-          sizeMe.noPlaceholders ||
+          withSize.enableSSRBehaviour ||
+          withSize.noPlaceholders ||
           noPlaceholder ||
           this.strategy === 'callback'
 
@@ -341,12 +333,12 @@ function sizeMe(config = defaultConfig) {
  *
  * DEPRECATED: Please use the global disablePlaceholders
  */
-sizeMe.enableSSRBehaviour = false
+withSize.enableSSRBehaviour = false
 
 /**
  * Global configuration allowing to disable placeholder rendering for all
  * sizeMe components.
  */
-sizeMe.noPlaceholders = false
+withSize.noPlaceholders = false
 
-export default sizeMe
+export default withSize

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import { h } from 'preact'
+import PropTypes from 'prop-types'
 import sizeMe from 'react-sizeme'
 
 const rootStyle = {
@@ -19,7 +20,8 @@ function MyComponent({ children, size: { width, height }, style }) {
   return (
     <div style={Object.assign({}, rootStyle, style)}>
       <span style={spanStyle}>
-        {Math.round(width)}x{Math.round(height)}<br />
+        {Math.round(width)}x{Math.round(height)}
+        <br />
         <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>
           (rounded)
         </span>

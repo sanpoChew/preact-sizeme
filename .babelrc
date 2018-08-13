@@ -1,57 +1,18 @@
 {
   "presets": [
-    ["env", { "targets": { "node": true } }],
+    [
+      "env",
+      {
+        "targets": {
+          "node": true
+        }
+      }
+    ],
     "stage-3",
     "react"
   ],
   "plugins": [
-    "transform-class-properties"
-  ],
-  "env": {
-    "react": {
-      "presets": [
-        "latest",
-        "stage-3",
-        "react"
-      ],
-      "plugins": [
-        "transform-class-properties"
-      ],
-    },
-    "preact": {
-      "presets": [
-        "latest",
-        "stage-3",
-        "react"
-      ],
-      "plugins": [
-        "transform-class-properties",
-        ["transform-react-jsx", {
-          "pragma": "h"
-        }]
-      ],
-    },
-    "umd": {
-      "presets": [
-        ["latest", { "es2015": { "modules": false } }],
-        "stage-3",
-        "react"
-      ],
-      "plugins": [
-        "transform-class-properties",
-        "lodash"
-      ],
-    },
-    "test": {
-      "presets": [
-        ["env", { "targets": { "node": true } }],
-        "stage-3",
-        "react"
-      ],
-      "plugins": [
-        "transform-class-properties",
-        "rewire"
-      ]
-    }
-  }
+    "transform-class-properties",
+    ["transform-react-jsx", { "pragma":"h" }]
+  ]
 }
