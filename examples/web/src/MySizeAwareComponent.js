@@ -1,6 +1,6 @@
 import { h } from 'preact'
 import PropTypes from 'prop-types'
-import sizeMe from 'react-sizeme'
+import sizeMe from 'preact-sizeme'
 
 const rootStyle = {
   fontWeight: 'bold',
