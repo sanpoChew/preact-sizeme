@@ -30,7 +30,7 @@
     "test:coverage:deploy": "npm run test:coverage && codecov"
   },
   "dependencies": {
-    "element-resize-detector": "github:sanpoChew/element-resize-detector",
+    "element-resize-detector": "github:wnr/element-resize-detector#WIP-1.2.0",
     "invariant": "^2.2.2",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
